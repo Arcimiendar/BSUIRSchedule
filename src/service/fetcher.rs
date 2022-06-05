@@ -1,10 +1,9 @@
 use std::{error, fmt};
-use std::f32::consts::E;
-use std::fmt::{format, Formatter};
+use std::fmt::{Formatter};
 use reqwest;
-use reqwest::Error;
 use serde::de::DeserializeOwned;
 use serde_json::from_str;
+use crate::types::announcement::Announcement;
 use crate::types::auditory::Auditory;
 use crate::types::last_update::LastUpdate;
 use crate::types::query_params::QueryParams;
@@ -36,7 +35,7 @@ fn fetch(url: &str) -> Result<String> {
 }
 
 
-fn fetch_and_deserialize<'a, T: DeserializeOwned>(url: &str) -> Result<T> {
+fn fetch_and_deserialize<T: DeserializeOwned>(url: &str) -> Result<T> {
     match fetch(url) {
         Ok(text) => {
             match from_str::<T>(text.as_str()) {
@@ -47,6 +46,7 @@ fn fetch_and_deserialize<'a, T: DeserializeOwned>(url: &str) -> Result<T> {
         Err(e) => Err(e)
     }
 }
+
 
 fn get_week_number() -> Result<u32> {
     match fetch("https://iis.bsuir.by/api/v1/schedule/current-week") {
@@ -74,11 +74,18 @@ fn get_last_update<T: QueryParams>(param: T) -> Result<LastUpdate> {
 }
 
 
+fn get_announcements<T: QueryParams>(param: T) -> Result<Vec<Announcement>> {
+    let url = format!(
+        "https://iis.bsuir.by/api/v1/announcements/{}", param.get_query_params()
+    );
+    fetch_and_deserialize(url.as_str())
+}
 
 
 #[cfg(test)]
 mod tests {
-    use crate::service::fetcher::{get_auditories, get_last_update, get_week_number};
+    use crate::service::fetcher::{get_announcements, get_auditories, get_last_update, get_week_number};
+    use crate::types::announcement::AnnouncementsOfEmployee;
     use crate::types::last_update::LastUpdateByGroupNumber;
 
     #[test]
@@ -98,6 +105,14 @@ mod tests {
         let res = get_last_update(
             LastUpdateByGroupNumber { group_number: "155841".to_string() }
         );
+        assert!(res.is_ok());
+    }
+
+    #[test]
+    fn get_announcements_works() {
+        let res = get_announcements(AnnouncementsOfEmployee {
+            employee_url_id: "s-nesterenkov".to_string()
+        });
         assert!(res.is_ok());
     }
 }

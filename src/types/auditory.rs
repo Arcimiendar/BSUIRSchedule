@@ -5,38 +5,38 @@ use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct AuditoryType {
-    id: u32,
-    name: String,
-    abbrev: String,
+pub struct AuditoryType {
+    pub id: u32,
+    pub name: String,
+    pub abbrev: String,
 }
 
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct BuildingNumber {
-    id: u32,
-    name: String
+pub struct BuildingNumber {
+    pub id: u32,
+    pub name: String
 }
 
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct Department {
-    id_department: u32,
-    abbrev:  String,
-    name: String,
-    name_and_abbrev: String
+pub struct Department {
+    pub id_department: u32,
+    pub abbrev:  String,
+    pub name: String,
+    pub name_and_abbrev: String
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Auditory {
-    id: u32,
-    name: String,
-    note: Option<String>,
-    capacity: Option<u32>,
-    auditory_type: AuditoryType,
-    building_number: BuildingNumber,
-    department: Option<Department>
+    pub id: u32,
+    pub name: String,
+    pub note: Option<String>,
+    pub capacity: Option<u32>,
+    pub auditory_type: AuditoryType,
+    pub building_number: BuildingNumber,
+    pub department: Option<Department>
 }

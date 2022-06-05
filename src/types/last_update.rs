@@ -5,12 +5,12 @@ use crate::types::query_params::QueryParams;
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct LastUpdate {
-    last_update_date: String
+    pub last_update_date: String
 }
 
 
 pub struct LastUpdateByGroupNumber {
-    pub(crate) group_number: String
+    pub group_number: String
 }
 
 impl QueryParams for LastUpdateByGroupNumber {
@@ -20,7 +20,7 @@ impl QueryParams for LastUpdateByGroupNumber {
 }
 
 pub struct LastUpdateByGroupId {
-    group_id: u32
+    pub group_id: u32
 }
 
 impl QueryParams for LastUpdateByGroupId {
@@ -30,7 +30,7 @@ impl QueryParams for LastUpdateByGroupId {
 }
 
 pub struct LastUpdateByEmployeeUrlId {
-    employee_id: String
+    pub employee_id: String
 }
 
 impl QueryParams for LastUpdateByEmployeeUrlId {
@@ -40,7 +40,7 @@ impl QueryParams for LastUpdateByEmployeeUrlId {
 }
 
 pub struct LastUpdateByEmployeeId {
-    employee_id: u32
+    pub employee_id: u32
 }
 
 impl QueryParams for LastUpdateByEmployeeId {
