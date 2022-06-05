@@ -10,6 +10,7 @@ use crate::types::faculty::Faculty;
 use crate::types::last_update::LastUpdate;
 use crate::types::query_params::QueryParams;
 use crate::types::specialities::Speciality;
+use crate::types::employee::Employee;
 
 
 #[derive(Debug, Clone)]
@@ -52,15 +53,7 @@ fn fetch_and_deserialize<T: DeserializeOwned>(url: &str) -> Result<T> {
 
 
 fn get_week_number() -> Result<u32> {
-    match fetch("https://iis.bsuir.by/api/v1/schedule/current-week") {
-        Ok(text) => {
-            match text.parse::<u32>() {
-                Ok(num) => Ok(num),
-                Err(e) => Err(e.into())
-            }
-        },
-        Err(e) => Err(e.into())
-    }
+    fetch_and_deserialize("https://iis.bsuir.by/api/v1/schedule/current-week")
 }
 
 
@@ -100,9 +93,17 @@ fn get_faculties() -> Result<Vec<Faculty>> {
 }
 
 
+fn get_employees() -> Result<Vec<Employee>> {
+    fetch_and_deserialize("https://iis.bsuir.by/api/v1/employees/all")
+}
+
+
 #[cfg(test)]
 mod tests {
-    use crate::service::fetcher::{get_announcements, get_auditories, get_departments, get_faculties, get_last_update, get_specielities, get_week_number};
+    use crate::service::fetcher::{
+        get_announcements, get_auditories, get_departments, get_employees,
+        get_faculties, get_last_update, get_specielities, get_week_number
+    };
     use crate::types::announcement::AnnouncementsOfEmployee;
     use crate::types::last_update::LastUpdateByGroupNumber;
 
@@ -149,6 +150,12 @@ mod tests {
     #[test]
     fn get_faculties_works() {
         let res = get_faculties();
+        assert!(res.is_ok());
+    }
+
+    #[test]
+    fn get_employees_works() {
+        let res = get_employees();
         assert!(res.is_ok());
     }
 }

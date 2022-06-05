@@ -5,3 +5,4 @@ pub mod announcement;
 pub mod specialities;
 pub mod department;
 pub mod faculty;
+pub mod employee;
