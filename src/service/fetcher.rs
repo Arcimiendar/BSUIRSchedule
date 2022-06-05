@@ -1,8 +1,13 @@
 use std::{error, fmt};
-use std::fmt::Formatter;
+use std::f32::consts::E;
+use std::fmt::{format, Formatter};
 use reqwest;
+use reqwest::Error;
+use serde::de::DeserializeOwned;
 use serde_json::from_str;
 use crate::types::auditory::Auditory;
+use crate::types::last_update::LastUpdate;
+use crate::types::query_params::QueryParams;
 
 
 #[derive(Debug, Clone)]
@@ -31,6 +36,18 @@ fn fetch(url: &str) -> Result<String> {
 }
 
 
+fn fetch_and_deserialize<'a, T: DeserializeOwned>(url: &str) -> Result<T> {
+    match fetch(url) {
+        Ok(text) => {
+            match from_str::<T>(text.as_str()) {
+                Ok(response) => Ok(response),
+                Err(e) => Err(e.into())
+            }
+        },
+        Err(e) => Err(e)
+    }
+}
+
 fn get_week_number() -> Result<u32> {
     match fetch("https://iis.bsuir.by/api/v1/schedule/current-week") {
         Ok(text) => {
@@ -45,15 +62,15 @@ fn get_week_number() -> Result<u32> {
 
 
 fn get_auditories() -> Result<Vec<Auditory>> {
-    match fetch("https://iis.bsuir.by/api/v1/auditories") {
-        Ok(text) => {
-            match from_str::<Vec<Auditory>>(text.as_str()) {
-                Ok(auditories) => Ok(auditories),
-                Err(e) => Err(e.into())
-            }
-        },
-        Err(e) => Err(e)
-    }
+    fetch_and_deserialize("https://iis.bsuir.by/api/v1/auditories")
+}
+
+
+fn get_last_update<T: QueryParams>(param: T) -> Result<LastUpdate> {
+    let url = format!(
+        "https://iis.bsuir.by/api/v1/last-update-date/{}", param.get_query_params()
+    );
+    fetch_and_deserialize(url.as_str())
 }
 
 
@@ -61,7 +78,8 @@ fn get_auditories() -> Result<Vec<Auditory>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::service::fetcher::{get_auditories, get_week_number};
+    use crate::service::fetcher::{get_auditories, get_last_update, get_week_number};
+    use crate::types::last_update::LastUpdateByGroupNumber;
 
     #[test]
     fn get_week_number_works() {
@@ -73,5 +91,13 @@ mod tests {
     fn get_auditories_works() {
         let res = get_auditories();
         assert!(res.is_ok())
+    }
+
+    #[test]
+    fn get_last_update_works() {
+        let res = get_last_update(
+            LastUpdateByGroupNumber { group_number: "155841".to_string() }
+        );
+        assert!(res.is_ok());
     }
 }
