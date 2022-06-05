@@ -5,6 +5,8 @@ use serde::de::DeserializeOwned;
 use serde_json::from_str;
 use crate::types::announcement::Announcement;
 use crate::types::auditory::Auditory;
+use crate::types::department::Department;
+use crate::types::faculty::Faculty;
 use crate::types::last_update::LastUpdate;
 use crate::types::query_params::QueryParams;
 use crate::types::specialities::Speciality;
@@ -88,9 +90,19 @@ fn get_specielities() -> Result<Vec<Speciality>> {
 }
 
 
+fn get_departments() -> Result<Vec<Department>> {
+    fetch_and_deserialize("https://iis.bsuir.by/api/v1/departments")
+}
+
+
+fn get_faculties() -> Result<Vec<Faculty>> {
+    fetch_and_deserialize("https://iis.bsuir.by/api/v1/faculties")
+}
+
+
 #[cfg(test)]
 mod tests {
-    use crate::service::fetcher::{get_announcements, get_auditories, get_last_update, get_specielities, get_week_number};
+    use crate::service::fetcher::{get_announcements, get_auditories, get_departments, get_faculties, get_last_update, get_specielities, get_week_number};
     use crate::types::announcement::AnnouncementsOfEmployee;
     use crate::types::last_update::LastUpdateByGroupNumber;
 
@@ -125,6 +137,18 @@ mod tests {
     #[test]
     fn get_specialities_works() {
         let res = get_specielities();
+        assert!(res.is_ok());
+    }
+
+    #[test]
+    fn get_departments_works() {
+        let res = get_departments();
+        assert!(res.is_ok());
+    }
+
+    #[test]
+    fn get_faculties_works() {
+        let res = get_faculties();
         assert!(res.is_ok());
     }
 }

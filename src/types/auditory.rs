@@ -22,7 +22,7 @@ pub struct BuildingNumber {
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct Department {
+pub struct AuditoryDepartment {
     pub id_department: u32,
     pub abbrev:  String,
     pub name: String,
@@ -38,5 +38,5 @@ pub struct Auditory {
     pub capacity: Option<u32>,
     pub auditory_type: AuditoryType,
     pub building_number: BuildingNumber,
-    pub department: Option<Department>
+    pub department: Option<AuditoryDepartment>
 }
