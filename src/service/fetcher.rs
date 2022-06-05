@@ -7,6 +7,7 @@ use crate::types::announcement::Announcement;
 use crate::types::auditory::Auditory;
 use crate::types::last_update::LastUpdate;
 use crate::types::query_params::QueryParams;
+use crate::types::specialities::Speciality;
 
 
 #[derive(Debug, Clone)]
@@ -82,9 +83,14 @@ fn get_announcements<T: QueryParams>(param: T) -> Result<Vec<Announcement>> {
 }
 
 
+fn get_specielities() -> Result<Vec<Speciality>> {
+    fetch_and_deserialize("https://iis.bsuir.by/api/v1/specialities")
+}
+
+
 #[cfg(test)]
 mod tests {
-    use crate::service::fetcher::{get_announcements, get_auditories, get_last_update, get_week_number};
+    use crate::service::fetcher::{get_announcements, get_auditories, get_last_update, get_specielities, get_week_number};
     use crate::types::announcement::AnnouncementsOfEmployee;
     use crate::types::last_update::LastUpdateByGroupNumber;
 
@@ -113,6 +119,12 @@ mod tests {
         let res = get_announcements(AnnouncementsOfEmployee {
             employee_url_id: "s-nesterenkov".to_string()
         });
+        assert!(res.is_ok());
+    }
+
+    #[test]
+    fn get_specialities_works() {
+        let res = get_specielities();
         assert!(res.is_ok());
     }
 }
